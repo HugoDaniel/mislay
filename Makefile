@@ -1,10 +1,10 @@
 all: bundlejs examples
 
-bundlejs: html/mislay.js html/node_modules/canvaskit-wasm/bin/canvaskit.js html/node_modules/canvaskit-wasm/bin/canvaskit.wasm
+bundlejs: html/mislay.js html/node_modules/canvaskit-wasm/bin/full/canvaskit.js html/node_modules/canvaskit-wasm/bin/full/canvaskit.wasm
 	@-mkdir -p html/build
-	@cat html/node_modules/canvaskit-wasm/bin/canvaskit.js > html/build/bundle.js
+	@cat html/node_modules/canvaskit-wasm/bin/full/canvaskit.js > html/build/bundle.js
 	@cat html/mislay.js >> html/build/bundle.js
-	@cp html/node_modules/canvaskit-wasm/bin/canvaskit.wasm html/build
+	@cp html/node_modules/canvaskit-wasm/bin/full/canvaskit.wasm html/build
 	@echo "HTML: build created and available at ./html/build/"
 
 examples:
