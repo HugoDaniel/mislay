@@ -5,7 +5,7 @@
 
 
 class Mislay {
-  constructor(canvasId = "mislay", canvaskitBaseUrl = ".") {
+  constructor(canvasId = "mislay", canvaskitBaseUrl = "mislay") {
     // If the canvas dimensions are not set, then make it fullscreen
     const canvas = document.querySelector(`canvas#${canvasId}`);
     if (!canvas) {
@@ -29,18 +29,37 @@ class Mislay {
     this.isLoaded = new Promise((resolve, reject) => {
       ckLoaded.then((CanvasKit) => {
         this.surface = CanvasKit.MakeCanvasSurface(canvasId);
+        this.paint = new CanvasKit.Paint();
+        console.log(Mislay.program)
+        this.runtimeEffect = CanvasKit.RuntimeEffect.Make(Mislay.program);
+        this.surface.requestAnimationFrame(this.frame);
         this.CanvasKit = CanvasKit;
         resolve()
       })
     })
   }
+  frame = (canvas) => {
+    canvas.clear(this.CanvasKit.WHITE);
+    const shader = this.runtimeEffect.makeShader([
+      Math.sin(Date.now() / 2000) / 5,
+      512, 256,
+      1, 0, 0, 1,
+      0, 1, 0, 1],
+      true /*=opaque*/);
+    this.paint.setShader(shader);
+    canvas.drawRect(this.CanvasKit.LTRBRect(0, 0, globalThis.innerWidth, globalThis.innerHeight), this.paint);
+    shader.delete();
+    this.surface.requestAnimationFrame(this.frame);
+  }
   test() {
+    /*
     this.isLoaded.then(() => {
       const paint = new this.CanvasKit.Paint();
-      paint.setColor(this.CanvasKit.Color4f(0.9, 0, 0, 1.0));
+      // Test
+      paint.setColor(this.CanvasKit.Color4f(0.9, 0.2, 0, 1.0));
       paint.setStyle(this.CanvasKit.PaintStyle.Stroke);
       paint.setAntiAlias(true);
-      const rr = this.CanvasKit.RRectXY(this.CanvasKit.LTRBRect(10, 60, 210, 260), 25, 15);
+      const rr = this.CanvasKit.RRectXY(this.CanvasKit.LTRBRect(10, 60, 510, 260), 25, 15);
 
       const draw = (canvas) => {
         canvas.clear(this.CanvasKit.WHITE);
@@ -48,6 +67,25 @@ class Mislay {
       }
       this.surface.drawOnce(draw);
     });
+    */
   }
+
+  static program = `
+uniform float rad_scale;
+uniform float2 in_center;
+uniform float4 in_colors0;
+uniform float4 in_colors1;
+
+half4 main(float2 p) {
+    float2 pp = p - in_center;
+    float radius = sqrt(dot(pp, pp));
+    radius = sqrt(radius);
+    float angle = atan(pp.y / pp.x);
+    float t = (angle + 3.1415926/2) / (3.1415926);
+    t += radius * rad_scale;
+    t = fract(t);
+    return half4(mix(in_colors0, in_colors1, t));
+}
+`;
 }
 
