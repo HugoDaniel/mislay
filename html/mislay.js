@@ -23,9 +23,22 @@ class Mislay {
         canvas.height= globalThis.innerHeight;
       })
     }
+    this.pos = [0, 0];
+
+    // Set the interation routine in the event listeners
+    canvas.addEventListener('pointermove', this.interact);
+    canvas.addEventListener('pointerdown', this.interact);
+    canvas.addEventListener('lostpointercapture', this.interact);
+    canvas.addEventListener('pointerleave', this.interact);
+    canvas.addEventListener('pointerup', this.interact);
+
+    // Start the CanvasKit by loading the wasm file
     const ckLoaded = CanvasKitInit(
         { locateFile: (file) => `${canvaskitBaseUrl}/${file}`});
 
+    // The initialization of CanvasKit for Mislay consists in creating a big
+    // surface, set the shader code in it and start the animation loop right
+    // away.
     this.isLoaded = new Promise((resolve, reject) => {
       ckLoaded.then((CanvasKit) => {
         this.surface = CanvasKit.MakeCanvasSurface(canvasId);
@@ -50,6 +63,11 @@ class Mislay {
     canvas.drawRect(this.CanvasKit.LTRBRect(0, 0, globalThis.innerWidth, globalThis.innerHeight), this.paint);
     shader.delete();
     this.surface.requestAnimationFrame(this.frame);
+  }
+  interact = (e) => {
+    const type = e.type;
+    this.pos[0] = e.offsetX;
+    this.pos[1] = e.offsetX;
   }
   test() {
     /*
