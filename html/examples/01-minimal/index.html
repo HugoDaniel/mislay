@@ -1,11 +1,18 @@
 <!doctype html>
 <html>
   <title>Minimal Mislay Example</title>
+<style>
+html,body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+</style>
   <body>
     <canvas id=mislay></canvas>
     <script src=mislay/bundle.js></script>
     <script>
-        const ml = new Mislay("mislay", "mislay")
+        const ml = new Mislay()
         ml.test();
     </script>
   </body>
