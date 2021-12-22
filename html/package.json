@@ -1,0 +1,8 @@
+{
+  "name": "mislay",
+  "version": "0.0.0",
+  "description": "Display, Overlay, Mislay",
+  "main": "index.js",
+  "author": "Hugo Daniel",
+  "license": "EUPL"
+}
